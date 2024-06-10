@@ -1,0 +1,4 @@
+World;20;20;8;
+Grass;organisms.plants.grass;8;0;16;6;
+Sheep;organisms.animals.sheep;8;4;14;17;
+Grass;organisms.plants.grass;1;0;16;5;
