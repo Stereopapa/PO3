@@ -1,0 +1,4 @@
+World;5;5;1;
+Belladona;organisms.plants.belladona;1;99;2;2;
+Sheep;organisms.animals.sheep;1;4;1;2;
+Wolf;organisms.animals.wolf;1;9;3;1;

@@ -1,0 +1,15 @@
+World;5;5;208;
+Belladona;organisms.plants.belladona;10;99;0;3;
+Belladona;organisms.plants.belladona;20;99;4;2;
+Belladona;organisms.plants.belladona;21;99;0;4;
+Belladona;organisms.plants.belladona;49;99;1;4;
+Belladona;organisms.plants.belladona;51;99;1;3;
+Belladona;organisms.plants.belladona;53;99;2;2;
+Belladona;organisms.plants.belladona;60;99;3;2;
+Belladona;organisms.plants.belladona;134;99;2;4;
+Belladona;organisms.plants.belladona;150;99;2;3;
+Belladona;organisms.plants.belladona;162;99;3;3;
+Belladona;organisms.plants.belladona;164;99;3;4;
+Belladona;organisms.plants.belladona;169;99;4;4;
+Belladona;organisms.plants.belladona;208;99;4;3;
+Fox;organisms.animals.fox;208;3;2;0;

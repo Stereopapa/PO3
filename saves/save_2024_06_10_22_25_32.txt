@@ -1,0 +1,4 @@
+World;5;5;3;
+Turtle;organisms.animals.turtle;1;2;4;3;
+Wolf;organisms.animals.wolf;3;9;3;0;
+Fox;organisms.animals.fox;3;3;2;3;
