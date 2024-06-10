@@ -3,6 +3,7 @@ from PyQt5.QtGui import QFont, QColor, QBrush
 from worlds.world import World
 from gui.board import BoardFrame
 from save_handling import SaveHandler
+from collections import deque
 
 class UiMainFrame(object):
 
@@ -28,12 +29,18 @@ class UiMainFrame(object):
     border-color: rgb(255, 255, 255);
     color: rgb(255, 255, 255);
     """
-    SAVE_LABEL_STYLE = """
-    QLabel{
+    SAVE_BUTTON_STYLE = """
+    QPushButton{
         text-align: center;
         border:1px solid white;
         font-size: 16px;
         padding: 2px;
+    }
+    QPushButton:hover{
+        background-color: rgb(135, 134, 98);
+    }
+    QPushButton:checked{
+        background-color: rgb(165, 164, 128);
     }
     """
     def __init__(self, MainWindow, world: World):
@@ -92,7 +99,7 @@ class UiMainFrame(object):
         self.loadButton.setStyleSheet(self.BUTTON_STYLE)
         self.loadButton.setObjectName("loadButton")
         self.menuVerticalLayout.addWidget(self.loadButton)
-        self.loadButton.clicked.connect(self.load)
+        self.loadButton.clicked.connect(self.switchloadMenu)
 
         self.saveButton = QtWidgets.QPushButton(self.menuFrame)
         self.saveButton.setStyleSheet(self.BUTTON_STYLE)
@@ -150,25 +157,29 @@ class UiMainFrame(object):
 
         # loadMenu
         self.savesGroupBox = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
+        self.savesGroupBox.setFlat(True)
         self.gridLayout = QtWidgets.QGridLayout(self.savesGroupBox)
 
         self.loadLoadMenuButton = QtWidgets.QPushButton(self.savesGroupBox)
         self.loadLoadMenuButton.setText("Wczytaj")
         self.loadLoadMenuButton.setStyleSheet(self.BUTTON_STYLE)
-        self.loadLoadMenuButton.clicked.connect(self.switchLogs())
+        self.loadLoadMenuButton.clicked.connect(self.load)
         self.exitLoadMenuButton = QtWidgets.QPushButton(self.savesGroupBox)
         self.exitLoadMenuButton.setText("Wyjdz")
         self.exitLoadMenuButton.setStyleSheet(self.BUTTON_STYLE)
-        self.exitLoadMenuButton.clicked.connect(self.switchLogs())
+        self.exitLoadMenuButton.clicked.connect(self.switchLogs)
         self.gridLayout.addWidget(self.loadLoadMenuButton, 0, 0)
         self.gridLayout.addWidget(self.exitLoadMenuButton, 0, 1)
 
-        # generating saves labels
-        self.labelList = []
-        i = 0
-        for save in reversed(self.__saves):
-            self.addSaveToLoadMenu(save, i)
-            i += 1
+        # generating saves Buttons
+        self.saveButtonGroup = QtWidgets.QButtonGroup()
+        self.saveButtonGroup.setExclusive(True)
+        self.savesButtonsList = deque([])
+        row = 1
+        for save in self.__saves:
+            self.addSaveToLoadMenu(save, row)
+            row += 1
+        self.rebuildGridLayout()
         # adding to scroll layout
         self.logsAndLoadVerticalLayout.addWidget(self.savesGroupBox)
         self.logsAndLoadVerticalLayout.addWidget(self.logsLabel)
@@ -184,11 +195,23 @@ class UiMainFrame(object):
         self.saveButton.setText("Zapisz")
         self.loadButton.setText("Wczytaj")
         self.logsLabel.setText("Logi: \n")
+    def addSaveToLoadMenu(self, name: str, row: int):
+        self.savesButtonsList.appendleft(QtWidgets.QPushButton(name[:-4]))
+        self.savesButtonsList[0].setCheckable(True)
+        self.savesButtonsList[0].setStyleSheet(self.SAVE_BUTTON_STYLE)
+        self.saveButtonGroup.addButton(self.savesButtonsList[0])
 
-    def addSaveToLoadMenu(self, name: str, i: int):
-        self.labelList.append(QtWidgets.QLabel(name[:-4]))
-        self.labelList[i].setStyleSheet(self.SAVE_LABEL_STYLE)
-        self.gridLayout.addWidget(self.labelList[i], i + 1, 0, 1, 2)
+
+    def rebuildGridLayout(self):
+        for label in self.savesButtonsList:
+            if label is not None:
+                label.setParent(None)
+        row = 1
+        for label in self.savesButtonsList:
+            self.gridLayout.addWidget(label, row, 0, 1, 2)
+            row += 1
+
+
     def nextTurn(self):
         self.logsLabel.setText("Logi:\n"+self.__world.getLogs())  # Example log text
         self.scrollAreaWidgetContents.repaint()
@@ -200,17 +223,33 @@ class UiMainFrame(object):
         self.savesGroupBox.show()
     def switchLogs(self):
         self.savesGroupBox.hide()
+        self.uncheckButton()
         self.logsLabel.show()
+
     def load(self):
-        self.__saveHandler.load("save_2024_06_10_00_19_56.txt")
+        clickedButton = self.saveButtonGroup.checkedButton()
+
+        if not clickedButton:
+            return
+        name = clickedButton.text()+".txt"
+
+        self.__saveHandler.load(name)
+        self.switchLogs()
         self.drawTurn()
 
     def save(self):
         name = self.__saveHandler.save()
         self.addSaveToLoadMenu(name, len(self.__saves))
+        self.rebuildGridLayout()
         self.savesGroupBox.repaint()
+    def uncheckButton(self):
+        checked_button = self.saveButtonGroup.checkedButton()
+        if checked_button:
+            self.saveButtonGroup.setExclusive(False)
+            checked_button.setChecked(False)
+            self.saveButtonGroup.setExclusive(True)
+
     def nextTurn(self):
-        self.logsLabel.setText("Logi:\n"+self.__world.getLogs())  # Example log text
         self.scrollAreaWidgetContents.repaint()
         self.__world.nextTurn()
         self.drawTurn()
@@ -218,6 +257,7 @@ class UiMainFrame(object):
     def drawTurn(self):
         self.turnLabel.setText("Tura: "+str(self.__world.getTurn()))
         self.populationLabel.setText("Populacja: "+str(self.__world.getPopulation()))
+        self.logsLabel.setText("Logi:\n" + self.__world.getLogs())
         self.boardFrame.repaint()
 
 

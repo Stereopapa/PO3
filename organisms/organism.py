@@ -21,7 +21,7 @@ class Organism(ABC):
         pass
 
     def kill(self) -> None:
-        self._position = (-1,-1)
+        self._position = (-1, -1)
         self.__strenght = -1
 
     def increaseStrenght(self, value: int) -> None:

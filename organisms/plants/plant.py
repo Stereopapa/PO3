@@ -4,7 +4,7 @@ import random
 class Plant(Organism):
     def action(self) -> None:
         self.increaseAge()
-        success: int = random.randint(0,2)
+        success: int = random.randint(0,50)
         if(success != 0):
             return
         move: int = random.randint(0,7)
@@ -23,6 +23,7 @@ class Plant(Organism):
             return
         if(self.getStrenght() > attacker.getStrenght()):
             attacker.kill()
+            self._worldI.addLog(self.getMark() + " zabił " + attacker.getMark())
         else:
             self.kill()
-
+            self._worldI.addLog(attacker.getMark() + " zabił " + self.getMark())

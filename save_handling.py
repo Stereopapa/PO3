@@ -18,7 +18,7 @@ class SaveHandler:
         for org in self.__world.getOrganisms():
             saveString += org.toSave()
 
-        path: str = ""+name
+        path: str = "saves/"+name
         saveFile = open(path, "w")
         saveFile.write(saveString)
         saveFile.close()
@@ -36,7 +36,6 @@ class SaveHandler:
             saveFile = open(path, "r")
             line = saveFile.readline()
             while line:
-                print(line)
                 line = line.split(";")
                 if line[0] == "World":
                     self.__world.initWorld(int(line[1]), int(line[2]), int(line[3]))

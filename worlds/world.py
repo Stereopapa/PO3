@@ -17,6 +17,7 @@ class World:
         self.__height = height
         self.__turn = turn
         self.__organisms.clear()
+        self.__logs = ""
 
     def toSave(self) -> str:
         result: str = "World;"
@@ -27,16 +28,31 @@ class World:
         return result
 
     def populateWorld(self):
-        # from organisms.animals.sheep import Sheep
-        # Sheep((1,2),self)
-        self.addOrganism("organisms.animals.sheep", "Sheep", (random.randint(0,self.__width-1),random.randint(0,self.__height-1)))
-        # self.addOrganism("organisms.animals.wolf", "Wolf", (random.randint(0,self.__width-1),random.randint(0,self.__height-1)))
-        self.addOrganism("organisms.plants.grass", "Grass", (random.randint(0,self.__width-1),random.randint(0,self.__height-1)))
-
+        # self.addOrganism("organisms.animals.turtle", "Turtle", self.genererateRandomPosition())
+        # self.addOrganism("organisms.animals.sheep", "Sheep", self.genererateRandomPosition())
+        # self.addOrganism("organisms.animals.sheep", "Sheep",self.genererateRandomPosition())
+        # self.addOrganism("organisms.animals.wolf", "Wolf", self.genererateRandomPosition())
+        # self.addOrganism("organisms.animals.fox", "Fox", self.genererateRandomPosition())
+        # self.addOrganism("organisms.animals.wolf", "Wolf", self.genererateRandomPosition())
+        # self.addOrganism("organisms.plants.dandelion", "Dandelion", self.genererateRandomPosition())
+        # self.addOrganism("organisms.plants.guarana", "Guarana", self.genererateRandomPosition())
+        # self.addOrganism("organisms.plants.belladona", "Belladona", self.genererateRandomPosition())
+        # self.addOrganism("organisms.plants.pineborscht", "pineBorscht", self.genererateRandomPosition())
+        # self.addOrganism("organisms.plants.guarana", "Guarana", self.genererateRandomPosition())
+        # self.addOrganism("organisms.plants.grass", "Grass", self.genererateRandomPosition())
+    def genererateRandomPosition(self) -> (int, int):
+        flag = 0
+        position = (-1,-1)
+        while flag<500:
+            position = (random.randint(0,self.__width-1),random.randint(0,self.__height-1))
+            if self.getOrganism(position) == None:
+                break
+            flag += 1
+        return position
     def nextTurn(self):
         self.__logs = ""
         self.__turn += 1
-        self.__organisms.sort(key= lambda x : (x.getInitiative(), x.getAge()))
+        self.__organisms.sort(key= lambda x : (x.getInitiative(), x.getAge()), reverse=True)
         for org in self.__organisms:
             if org.getStrenght() >= 0:
                 org.action()
@@ -54,7 +70,7 @@ class World:
         self.__organisms.append(org)
         return org
 
-    def getOrganism(self, Position: (int, int)) -> Organism:
+    def getOrganism(self, Position: (int, int)):
         for org in self.__organisms:
             if org.getPosition() == Position:
                 return org
