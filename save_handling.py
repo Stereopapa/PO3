@@ -6,10 +6,10 @@ class SaveHandler:
     def __init__(self, world: World):
         self.__world = world
 
-    def getSaves(self):
+    def getSaves(self) -> str:
         savesFile = open("saves.txt", 'r')
-        print(savesFile.read())
-    def save(self):
+        return savesFile.read()
+    def save(self) -> str:
         now = datetime.now()
         d1 = now.strftime("%Y_%m_%d_%H_%M_%S")
         name: str = "save_"+str(d1)+".txt"
@@ -28,6 +28,7 @@ class SaveHandler:
         savesfile.close()
 
         self.__world.addLog("Człowiek utworzył nowy zapis")
+        return name
 
     def load(self, name: str):
         path: str = "saves/"+name

@@ -28,10 +28,19 @@ class UiMainFrame(object):
     border-color: rgb(255, 255, 255);
     color: rgb(255, 255, 255);
     """
+    SAVE_LABEL_STYLE = """
+    QLabel{
+        text-align: center;
+        border:1px solid white;
+        font-size: 16px;
+        padding: 2px;
+    }
+    """
     def __init__(self, MainWindow, world: World):
         self.__world = world
         self.__mainWindow = MainWindow
         self.__saveHandler = SaveHandler(world)
+        self.__saves = self.__saveHandler.getSaves().split()
         self.setupUi()
 
 
@@ -130,36 +139,41 @@ class UiMainFrame(object):
 
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-
         self.logsAndLoadVerticalLayout = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.logsAndLoadVerticalLayout.setObjectName("logsAndLoadVerticalLayout")
 
-
+        # logs
         self.logsLabel = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.logsLabel.setFont(QFont('Times', 14))
         self.logsLabel.setObjectName("logsLabel")
         self.logsLabel.setWordWrap(True)  # Allow the text to wrap
 
+        # loadMenu
         self.savesGroupBox = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
         self.gridLayout = QtWidgets.QGridLayout(self.savesGroupBox)
 
         self.loadLoadMenuButton = QtWidgets.QPushButton(self.savesGroupBox)
         self.loadLoadMenuButton.setText("Wczytaj")
+        self.loadLoadMenuButton.setStyleSheet(self.BUTTON_STYLE)
+        self.loadLoadMenuButton.clicked.connect(self.switchLogs())
         self.exitLoadMenuButton = QtWidgets.QPushButton(self.savesGroupBox)
-        self.exitLoadMenuButton.setText("wyjdz")
-        self.gridLayout.addRow(self.loadLoadMenuButton, self.exitLoadMenuButton)
+        self.exitLoadMenuButton.setText("Wyjdz")
+        self.exitLoadMenuButton.setStyleSheet(self.BUTTON_STYLE)
+        self.exitLoadMenuButton.clicked.connect(self.switchLogs())
+        self.gridLayout.addWidget(self.loadLoadMenuButton, 0, 0)
+        self.gridLayout.addWidget(self.exitLoadMenuButton, 0, 1)
 
-        self.label1 = QtWidgets.QLabel(self.savesGroupBox)
-        self.label1.setText("asfaf")
-        self.gridLayout.addRow(self.label1)
-        self.label2 = QtWidgets.QLabel(self.savesGroupBox)
-        self.label2.setText("asfafff")
-        self.gridLayout.addRow(self.label2)
-
+        # generating saves labels
+        self.labelList = []
+        i = 0
+        for save in reversed(self.__saves):
+            self.addSaveToLoadMenu(save, i)
+            i += 1
+        # adding to scroll layout
         self.logsAndLoadVerticalLayout.addWidget(self.savesGroupBox)
         self.logsAndLoadVerticalLayout.addWidget(self.logsLabel)
 
-        self.logsLabel.hide()
+        self.savesGroupBox.hide()
         self.logsAndLoadScroll.setWidget(self.scrollAreaWidgetContents)
         self.logsAndLoadVerticalLayout.setAlignment(QtCore.Qt.AlignTop)
 
@@ -171,19 +185,30 @@ class UiMainFrame(object):
         self.loadButton.setText("Wczytaj")
         self.logsLabel.setText("Logi: \n")
 
+    def addSaveToLoadMenu(self, name: str, i: int):
+        self.labelList.append(QtWidgets.QLabel(name[:-4]))
+        self.labelList[i].setStyleSheet(self.SAVE_LABEL_STYLE)
+        self.gridLayout.addWidget(self.labelList[i], i + 1, 0, 1, 2)
     def nextTurn(self):
         self.logsLabel.setText("Logi:\n"+self.__world.getLogs())  # Example log text
         self.scrollAreaWidgetContents.repaint()
         self.__world.nextTurn()
         self.drawTurn()
 
+    def switchloadMenu(self):
+        self.logsLabel.hide()
+        self.savesGroupBox.show()
+    def switchLogs(self):
+        self.savesGroupBox.hide()
+        self.logsLabel.show()
     def load(self):
         self.__saveHandler.load("save_2024_06_10_00_19_56.txt")
         self.drawTurn()
 
     def save(self):
-        self.__saveHandler.save()
-
+        name = self.__saveHandler.save()
+        self.addSaveToLoadMenu(name, len(self.__saves))
+        self.savesGroupBox.repaint()
     def nextTurn(self):
         self.logsLabel.setText("Logi:\n"+self.__world.getLogs())  # Example log text
         self.scrollAreaWidgetContents.repaint()

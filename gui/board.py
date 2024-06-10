@@ -12,8 +12,8 @@ class BoardFrame(QtWidgets.QFrame):
         self.__rectHeight: int = self.height()/self.__world.getHeight()
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
-        self.__rectWidth = self.width()/self.__world.getWidth()
-        self.__rectHeight = self.height()/self.__world.getHeight()
+        self.__rectWidth = int(self.width()/self.__world.getWidth())
+        self.__rectHeight = int(self.height()/self.__world.getHeight())
 
         rtemp = []
         self.__r = []
@@ -42,8 +42,8 @@ class BoardFrame(QtWidgets.QFrame):
             text = org.getMark();
             text_width = painter.fontMetrics().width(text)
             text_height = painter.fontMetrics().height()
-            text_x = self.__r[x][y].x() + (self.__r[x][y].width() - text_width) / 2
-            text_y = self.__r[x][y].y() + (self.__r[x][y].height() + text_height) / 2
+            text_x = int(self.__r[x][y].x() + (self.__r[x][y].width() - text_width) / 2)
+            text_y = int(self.__r[x][y].y() + (self.__r[x][y].height() + text_height) / 2)
 
             painter.drawText(text_x, text_y, text)
 
