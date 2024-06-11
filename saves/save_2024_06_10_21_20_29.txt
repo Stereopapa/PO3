@@ -1,4 +1,0 @@
-World;15;15;26;
-Sheep;organisms.animals.sheep;26;4;7;8;
-Wolf;organisms.animals.wolf;26;9;1;2;
-Wolf;organisms.animals.wolf;26;9;4;9;

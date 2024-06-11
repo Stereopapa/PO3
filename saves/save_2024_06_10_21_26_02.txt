@@ -1,4 +1,0 @@
-World;5;5;9;
-Guarana;organisms.plants.guarana;2;0;1;1;
-Sheep;organisms.animals.sheep;9;16;1;0;
-Wolf;organisms.animals.wolf;9;9;2;4;

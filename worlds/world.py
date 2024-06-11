@@ -27,19 +27,27 @@ class World:
         result += "\n"
         return result
 
+    def setHuman(self, human):
+        from organisms.animals.human import Human
+        self.__human: Human = human
     def populateWorld(self):
-        # self.addOrganism("organisms.animals.turtle", "Turtle", self.genererateRandomPosition())
-        # self.addOrganism("organisms.animals.sheep", "Sheep", self.genererateRandomPosition())
-        # self.addOrganism("organisms.animals.sheep", "Sheep",self.genererateRandomPosition())
-        # self.addOrganism("organisms.animals.wolf", "Wolf", self.genererateRandomPosition())
-        # self.addOrganism("organisms.animals.fox", "Fox", self.genererateRandomPosition())
-        # self.addOrganism("organisms.animals.wolf", "Wolf", self.genererateRandomPosition())
-        # self.addOrganism("organisms.plants.dandelion", "Dandelion", self.genererateRandomPosition())
-        # self.addOrganism("organisms.plants.guarana", "Guarana", self.genererateRandomPosition())
-        # self.addOrganism("organisms.plants.belladona", "Belladona", self.genererateRandomPosition())
-        # self.addOrganism("organisms.plants.pineborscht", "pineBorscht", self.genererateRandomPosition())
-        # self.addOrganism("organisms.plants.guarana", "Guarana", self.genererateRandomPosition())
-        # self.addOrganism("organisms.plants.grass", "Grass", self.genererateRandomPosition())
+
+        self.addOrganism("organisms.animals.human", "Human", self.genererateRandomPosition())
+        self.setHuman(self.__organisms[0])
+        self.addOrganism("organisms.animals.turtle", "Turtle", self.genererateRandomPosition())
+        self.addOrganism("organisms.animals.sheep", "Sheep", self.genererateRandomPosition())
+        self.addOrganism("organisms.animals.sheep", "Sheep",self.genererateRandomPosition())
+        self.addOrganism("organisms.animals.wolf", "Wolf", self.genererateRandomPosition())
+        self.addOrganism("organisms.animals.antelope", "Antelope", self.genererateRandomPosition())
+        self.addOrganism("organisms.animals.fox", "Fox", self.genererateRandomPosition())
+        self.addOrganism("organisms.animals.wolf", "Wolf", self.genererateRandomPosition())
+        self.addOrganism("organisms.plants.dandelion", "Dandelion", self.genererateRandomPosition())
+        self.addOrganism("organisms.plants.guarana", "Guarana", self.genererateRandomPosition())
+        self.addOrganism("organisms.plants.belladona", "Belladona", self.genererateRandomPosition())
+        self.addOrganism("organisms.animals.cybersheep", "CyberSheep", self.genererateRandomPosition())
+        self.addOrganism("organisms.plants.pineborscht", "PineBorscht", self.genererateRandomPosition())
+        self.addOrganism("organisms.plants.guarana", "Guarana", self.genererateRandomPosition())
+        self.addOrganism("organisms.plants.grass", "Grass", self.genererateRandomPosition())
     def genererateRandomPosition(self) -> (int, int):
         flag = 0
         position = (-1,-1)
@@ -75,6 +83,11 @@ class World:
             if org.getPosition() == Position:
                 return org
         return None
+    def getPineBorscht(self):
+        for org in self.__organisms:
+            if org.__class__.__name__ == "PineBorscht":
+                return org
+        return None
 
     def getAlovedMoves(self) -> ((int, int),(int, int),(int, int),(int, int),(int, int),(int, int),(int, int),(int, int)):
         return self.__alovedMoves
@@ -90,6 +103,9 @@ class World:
 
     def getOrganisms(self) -> [Organism]:
         return self.__organisms
+
+    def getHuman(self):
+        return self.__human
 
     def getPopulation(self) -> int:
         return len(self.__organisms)

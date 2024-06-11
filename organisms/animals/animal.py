@@ -41,7 +41,8 @@ class Animal(Organism):
             if self.getAge() < 2 or attacker.getAge() < 2:
                 return
             self.breed(attacker)
-
+        elif self.hasEscaped() or attacker.hasEscaped():
+            return
         elif (self.getStrenght() > attacker.getStrenght()):
             attacker.kill()
             self._worldI.addLog(self.getMark() + " zabił " + attacker.getMark())

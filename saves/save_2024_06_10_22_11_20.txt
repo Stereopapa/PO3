@@ -1,4 +1,0 @@
-World;5;5;29;
-Turtle;organisms.animals.turtle;6;2;2;0;
-Sheep;organisms.animals.sheep;29;4;0;3;
-Sheep;organisms.animals.sheep;29;4;1;0;

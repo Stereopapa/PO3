@@ -10,10 +10,20 @@ class BoardFrame(QtWidgets.QFrame):
         self.__world = world
         self.__rectWidth: int = self.width()/self.__world.getWidth()
         self.__rectHeight: int = self.height()/self.__world.getHeight()
+
+        self.brushBoardLithend = QtGui.QBrush(QtGui.QColor(115, 114, 78).lighter(130))
+        self.brushAnimalLithend = QtGui.QBrush(QtGui.QColor(130, 72, 1).lighter(130))
+        self.brushPlantLithend = QtGui.QBrush(QtGui.QColor(33, 150, 12).lighter(130))
+        self.brushBoard = QtGui.QBrush(QtGui.QColor(115, 114, 78))
+        self.brushAnimal = QtGui.QBrush(QtGui.QColor(130, 72, 1))
+        self.brushPlant = QtGui.QBrush(QtGui.QColor(33, 150, 12))
+        self.__r = []
+
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
         self.__rectWidth = int(self.width()/self.__world.getWidth())
         self.__rectHeight = int(self.height()/self.__world.getHeight())
+        pickedPosition = self.__world.getHuman().getPickedPosition()
 
         rtemp = []
         self.__r = []
@@ -24,6 +34,11 @@ class BoardFrame(QtWidgets.QFrame):
             self.__r.append(rtemp)
         for x in range(self.__world.getWidth()):
             for y in range(self.__world.getHeight()):
+                if pickedPosition[0] == x and pickedPosition[1] == y:
+                    painter.setBrush(self.brushBoardLithend)
+                    painter.drawRect(self.__r[x][y])
+                    painter.setBrush(self.brushBoard)
+                    continue
                 painter.drawRect(self.__r[x][y])
 
         organisms = self.__world.getOrganisms()
@@ -32,14 +47,15 @@ class BoardFrame(QtWidgets.QFrame):
             x: int = org.getPosition()[0]
             y: int = org.getPosition()[1]
             if isinstance(org, Animal):
-                brush = QtGui.QBrush(QtGui.QColor(130, 72, 1))
-                painter.setBrush(brush)
-                painter.drawRect(self.__r[x][y])
+                if pickedPosition[0] == x and pickedPosition[1] == y:
+                    painter.setBrush(self.brushAnimalLithend)
+                painter.setBrush(self.brushAnimal)
             elif isinstance(org, Plant):
-                brush = QtGui.QBrush(QtGui.QColor(33, 150, 12))
-                painter.setBrush(brush)
-                painter.drawRect(self.__r[x][y])
-            text = org.getMark();
+                if pickedPosition[0] == x and pickedPosition[1] == y:
+                    painter.setBrush(self.brushPlantLithend)
+                painter.setBrush(self.brushPlant)
+            painter.drawRect(self.__r[x][y])
+            text = org.getMark()
             text_width = painter.fontMetrics().width(text)
             text_height = painter.fontMetrics().height()
             text_x = int(self.__r[x][y].x() + (self.__r[x][y].width() - text_width) / 2)

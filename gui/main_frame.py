@@ -1,11 +1,12 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 from PyQt5.QtGui import QFont, QColor, QBrush
+from PyQt5.QtWidgets import QWidget
 from worlds.world import World
 from gui.board import BoardFrame
 from save_handling import SaveHandler
 from collections import deque
 
-class UiMainFrame(object):
+class UiMainFrame(QWidget):
 
     BUTTON_STYLE = """
     QPushButton{
@@ -44,6 +45,7 @@ class UiMainFrame(object):
     }
     """
     def __init__(self, MainWindow, world: World):
+        super().__init__()
         self.__world = world
         self.__mainWindow = MainWindow
         self.__saveHandler = SaveHandler(world)
@@ -59,21 +61,21 @@ class UiMainFrame(object):
         self.setupMenuFrame()
         self.setupMainGameFrame()
 
-        self.__mainWindow.setCentralWidget(self.centralwidget)
+        self.__mainWindow.setCentralWidget(self)
 
         self.retranslateUi()
         # QtCore.QMetaObject.connectSlotsByName(self.__mainWindow)
 
         self.drawTurn()
     def setupCentralWidget(self):
-        self.centralwidget = QtWidgets.QWidget(self.__mainWindow)
-        self.centralwidget.setObjectName("centralwidget")
+        # self.centralwidget = QtWidgets.QWidget(self.__mainWindow)
+        # self.centralwidget.setObjectName("centralwidget")
 
-        self.centralHorizontalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.centralHorizontalLayout = QtWidgets.QVBoxLayout(self)
         self.centralHorizontalLayout.setObjectName("centralHorizontalLayout")
 
     def setupMenuFrame(self):
-        self.menuFrame = QtWidgets.QFrame(self.centralwidget)
+        self.menuFrame = QtWidgets.QFrame(self)
         self.menuFrame.setFrameShape(QtWidgets.QFrame.Box)
         self.menuFrame.setFrameShadow(QtWidgets.QFrame.Plain)
         self.menuFrame.setObjectName("menuFrame")
@@ -95,6 +97,18 @@ class UiMainFrame(object):
         self.populationLabel.setObjectName("populationLabel")
         self.menuVerticalLayout.addWidget(self.populationLabel)
 
+        self.nextTurnButton = QtWidgets.QPushButton(self.menuFrame)
+        self.nextTurnButton.setStyleSheet(self.BUTTON_STYLE)
+        self.nextTurnButton.setObjectName("nextTurnButton")
+        self.menuVerticalLayout.addWidget(self.nextTurnButton)
+        self.nextTurnButton.clicked.connect(self.nextTurn)
+
+        self.specialAbilityButton = QtWidgets.QPushButton(self.menuFrame)
+        self.specialAbilityButton.setStyleSheet(self.BUTTON_STYLE)
+        self.specialAbilityButton.setObjectName("specialAbilityButton")
+        self.menuVerticalLayout.addWidget(self.specialAbilityButton)
+        self.specialAbilityButton.clicked.connect(self.activateSpecialAbility)
+
         self.loadButton = QtWidgets.QPushButton(self.menuFrame)
         self.loadButton.setStyleSheet(self.BUTTON_STYLE)
         self.loadButton.setObjectName("loadButton")
@@ -107,14 +121,10 @@ class UiMainFrame(object):
         self.menuVerticalLayout.addWidget(self.saveButton)
         self.saveButton.clicked.connect(self.save)
 
-        self.nextTurnButton = QtWidgets.QPushButton(self.menuFrame)
-        self.nextTurnButton.setStyleSheet(self.BUTTON_STYLE)
-        self.nextTurnButton.setObjectName("nextTurnButton")
-        self.menuVerticalLayout.addWidget(self.nextTurnButton)
-        self.nextTurnButton.clicked.connect(self.nextTurn)
+
 
     def setupMainGameFrame(self):
-        self.mainGameFrame = QtWidgets.QFrame(self.centralwidget)
+        self.mainGameFrame = QtWidgets.QFrame(self)
         self.mainGameFrame.setFrameShape(QtWidgets.QFrame.Box)
         self.mainGameFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.mainGameFrame.setObjectName("mainGameFrame")
@@ -194,6 +204,7 @@ class UiMainFrame(object):
         self.nextTurnButton.setText("Nastepna Tura")
         self.saveButton.setText("Zapisz")
         self.loadButton.setText("Wczytaj")
+        self.specialAbilityButton.setText("Tarcza: Gotowa")
         self.logsLabel.setText("Logi: \n")
     def addSaveToLoadMenu(self, name: str, row: int):
         self.savesButtonsList.appendleft(QtWidgets.QPushButton(name[:-4]))
@@ -225,6 +236,37 @@ class UiMainFrame(object):
         self.savesGroupBox.hide()
         self.uncheckButton()
         self.logsLabel.show()
+
+    def activateSpecialAbility(self):
+        self.__world.getHuman().activateSpecialAbility()
+        self.specialAbilityButton.setText(self.__world.getHuman().getSpecialAbilityState())
+
+    def humanReact(self, direction):
+        self.__world.getHuman().resetDirection()
+        position = self.__world.getHuman().setDirection(direction)
+        print(position)
+        self.boardFrame.repaint()
+    def keyPressEvent(self, event):
+        key = event.key()
+        if key == 81:  # Up Left(q) move
+            self.humanReact((-1, -1))
+        elif key == 87:  # Up(w) move
+            self.humanReact((-1, 0))
+        elif key == 69:  # Up Right(e) move
+            self.humanReact((-1, 1))
+        elif key == 68:  # Right(d) move
+            self.humanReact((0, 1))
+        elif key == 67:  # Down Right(c) move
+            self.humanReact((1, 1))
+        elif key == 88:  # down (x) move
+            self.humanReact((1, 0))
+        elif key == 90:  # down Left (z) move
+            self.humanReact((1, -1))
+        elif key == 65:  # Left (a) move
+            self.humanReact((0, -1))
+        elif key == 83:  # middle (s) stay move
+            self.humanReact((0, 0))
+
 
     def load(self):
         clickedButton = self.saveButtonGroup.checkedButton()
@@ -258,6 +300,7 @@ class UiMainFrame(object):
         self.turnLabel.setText("Tura: "+str(self.__world.getTurn()))
         self.populationLabel.setText("Populacja: "+str(self.__world.getPopulation()))
         self.logsLabel.setText("Logi:\n" + self.__world.getLogs())
+        self.specialAbilityButton.setText(self.__world.getHuman().getSpecialAbilityState())
         self.boardFrame.repaint()
 
 

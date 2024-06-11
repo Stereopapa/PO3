@@ -44,8 +44,10 @@ class Organism(ABC):
         result += str(self.__strenght)+";"
         result += str(self._position[0])+";"
         result += str(self._position[1])+";"
-        result += "\n"
         return result
+
+    def hasEscaped(self) -> bool:
+        return False
 
 
     def setPosition(self, position: (int, int)) -> None:

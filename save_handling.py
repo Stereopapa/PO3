@@ -1,5 +1,5 @@
 from worlds.world import World
-from organisms.organism import Organism
+from organisms.animals.human import Human
 from datetime import datetime
 
 class SaveHandler:
@@ -16,7 +16,7 @@ class SaveHandler:
         saveString = ""
         saveString += self.__world.toSave()
         for org in self.__world.getOrganisms():
-            saveString += org.toSave()
+            saveString += org.toSave()+"\n"
 
         path: str = "saves/"+name
         saveFile = open(path, "w")
@@ -39,6 +39,13 @@ class SaveHandler:
                 line = line.split(";")
                 if line[0] == "World":
                     self.__world.initWorld(int(line[1]), int(line[2]), int(line[3]))
+                elif line[0] == "Human":
+                    position: (int, int) = (int(line[4]), int(line[5]))
+                    human: Human = self.__world.addOrganism(line[1], line[0], position)
+                    human.setAge(int(line[2]))
+                    human.increaseStrenght(int(line[3]) - human.getStrenght())
+                    human.setSpecialAbility(int(line[6]))
+                    self.__world.setHuman(human)
                 else:
                     position: (int, int) = (int(line[4]), int(line[5]))
                     org = self.__world.addOrganism(line[1], line[0], position)
